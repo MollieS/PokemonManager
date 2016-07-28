@@ -1,24 +1,36 @@
+plugins {
+    id "com.github.kt3k.coveralls" version "2.6.3"
+    id "jacoco"
+}
+
 group 'PokemonManager'
-version '0.1.0'
+version '0.2.0'
 
 apply plugin: 'java'
 
 sourceCompatibility = 1.8
 
 repositories {
+    jcenter()
     mavenCentral()
-}
-
-task(run, dependsOn: 'classes', type: JavaExec) {
-    main = "pkmncore.Main"
-    classpath = sourceSets.main.runtimeClasspath
-}
-
-run {
-    standardInput = System.in
 }
 
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.11'
     compile 'com.google.code.gson:gson:2.7'
+}
+
+jacocoTestReport {
+    reports {
+        xml.enabled = true
+        html.enabled = true
+    }
+
+    afterEvaluate {
+        classDirectories = files(classDirectories.files.collect {
+            fileTree(dir: it,
+                    exclude: ['**/PokemonSearch.*'
+                    ])
+        })
+    }
 }

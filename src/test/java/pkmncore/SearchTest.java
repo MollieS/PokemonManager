@@ -13,5 +13,4 @@ public class SearchTest {
         JsonObject response = fake.findByName("pika");
         assertEquals("pikachu", response.get("name").getAsString());
     }
-
 }

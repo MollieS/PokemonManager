@@ -20,6 +20,7 @@ public class PokemonTest {
 
     @Test
     public void hasAbilities() {
-        assertEquals(new String[]{"lightning-rod", "static"}, pokemon.getAbilities());
+        assertEquals("lightning-rod", pokemon.getAbilities()[0]);
+        assertEquals("static", pokemon.getAbilities()[1]);
     }
 }

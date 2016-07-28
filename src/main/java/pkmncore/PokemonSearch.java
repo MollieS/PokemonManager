@@ -15,34 +15,34 @@ public class PokemonSearch implements SearchEngine {
     private URL url;
     
     public PokemonSearch(String url) {
-        try {
-            this.url = new URL(url);
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
+       this.url = createURL(url);
     }
 
     public JsonObject findByName(String name) {
-        URL url = getURL(name);
-        URLConnection connection = connectToEndPoint(url);
+        URL endpoint = getURL(name);
+        URLConnection connection = connectToEndPoint(endpoint);
         String response = getResponse(connection);
         return parseResponse(response);
     }
 
     private JsonObject parseResponse(String response) {
-        JsonObject json = new JsonParser().parse(response).getAsJsonObject();
-        return json;
+        return new JsonParser().parse(response).getAsJsonObject();
     }
 
     private String getResponse(URLConnection connection) {
         String response = null;
         try {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-            response = reader.readLine();
-            reader.close();
+            response = readResponse(connection);
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return response;
+    }
+
+    private String readResponse(URLConnection connection) throws IOException {
+        BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+        String response = reader.readLine();
+        reader.close();
         return response;
     }
 
@@ -65,5 +65,15 @@ public class PokemonSearch implements SearchEngine {
             e.printStackTrace();
         }
         return endpoint;
+    }
+
+    private URL createURL(String stringURL) {
+        URL url = null;
+        try {
+            this.url = new URL(stringURL);
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+        return url;
     }
 }
