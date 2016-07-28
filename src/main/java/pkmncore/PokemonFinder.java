@@ -26,8 +26,11 @@ public class PokemonFinder {
 
     public String[] findAbilities(JsonObject pokemonData) {
         JsonArray abilities = pokemonData.get("abilities").getAsJsonArray();
-        String[] pokemonAbilities = getAbilities(abilities);
-        return pokemonAbilities;
+        return getAbilities(abilities);
+    }
+
+    public String formatQuery(String query) {
+        return query.toLowerCase();
     }
 
     private String[] getAbilities(JsonArray abilities) {
