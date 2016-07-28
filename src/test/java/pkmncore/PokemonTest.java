@@ -6,7 +6,7 @@ import static org.junit.Assert.assertEquals;
 
 public class PokemonTest {
 
-    private Pokemon pokemon = new Pokemon("Pikachu", 1, "lightning-rod");
+    private Pokemon pokemon = new Pokemon("Pikachu", 1, new String[]{"lightning-rod", "static"});
 
     @Test
     public void hasAName() {
@@ -15,11 +15,11 @@ public class PokemonTest {
 
     @Test
     public void hasAHeight() {
-        assertEquals(7, pokemon.getHeight());
+        assertEquals(1, pokemon.getHeight());
     }
 
     @Test
-    public void hasAnAbility() {
-        assertEquals("lightning-rod", pokemon.getAbility());
+    public void hasAbilities() {
+        assertEquals(new String[]{"lightning-rod", "static"}, pokemon.getAbilities());
     }
 }

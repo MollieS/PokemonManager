@@ -4,12 +4,12 @@ public class Pokemon {
 
     private String name;
     private int height;
-    private String ability;
+    private String[] abilities;
 
-    public Pokemon(String name, int height, String ability) {
+    public Pokemon(String name, int height, String[] abilities) {
         this.name = name;
         this.height = height;
-        this.ability = ability;
+        this.abilities = abilities;
     }
 
     public String getName() {
@@ -20,7 +20,7 @@ public class Pokemon {
         return height;
     }
 
-    public String getAbility() {
-        return ability;
+    public String[] getAbilities() {
+        return abilities;
     }
 }
