@@ -12,7 +12,12 @@ public class PokemonFinder {
     }
 
     public Pokemon find(String name) {
-        JsonObject pokemonData = searchEngine.findByName(name);
+        JsonObject pokemonData = null;
+        try {
+            pokemonData = searchEngine.findByName(name);
+        } catch (PokemonError pokemonError) {
+            pokemonError.getMessage();
+        }
         return new Pokemon(findName(pokemonData), findHeight(pokemonData), findAbilities(pokemonData));
     }
 

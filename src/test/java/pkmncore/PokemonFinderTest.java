@@ -11,19 +11,19 @@ public class PokemonFinderTest {
     private PokemonFinder pokemonFinder = new PokemonFinder(search);
 
     @Test
-    public void findsPokemonName() {
+    public void findsPokemonName() throws PokemonError {
         JsonObject data = search.findByName("pikachu");
         assertEquals("pikachu", pokemonFinder.findName(data));
     }
 
     @Test
-    public void findsPokemonHeight() {
+    public void findsPokemonHeight() throws PokemonError {
         JsonObject data = search.findByName("pikachu");
         assertEquals(4, pokemonFinder.findHeight(data));
     }
 
     @Test
-    public void findsPokemonAbilities() {
+    public void findsPokemonAbilities() throws PokemonError {
         JsonObject data = search.findByName("pikachu");
         assertEquals("lightning-rod", pokemonFinder.findAbilities(data)[0]);
         assertEquals("static", pokemonFinder.findAbilities(data)[1]);
