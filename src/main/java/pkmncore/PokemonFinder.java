@@ -50,7 +50,7 @@ public class PokemonFinder {
     }
 
     public String formatQuery(String query) {
-        return query.toLowerCase();
+        return query.toLowerCase().trim();
     }
 
     private String[] getAbilities(JsonArray abilities) {

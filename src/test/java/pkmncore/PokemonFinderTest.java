@@ -40,7 +40,12 @@ public class PokemonFinderTest {
     }
 
     @Test
-    public void formatsQuery() {
+    public void changesQueryToLowerCase() {
         assertEquals("pikachu", pokemonFinder.formatQuery("Pikachu"));
+    }
+
+    @Test
+    public void stripsWhiteSpace() {
+        assertEquals("bulbasaur", pokemonFinder.formatQuery("bulbasaur "));
     }
 }
