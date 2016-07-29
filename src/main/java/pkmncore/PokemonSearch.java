@@ -12,10 +12,10 @@ import java.net.URLConnection;
 
 public class PokemonSearch implements SearchEngine {
     
-    private URL url;
+    private String url;
     
     public PokemonSearch(String url) {
-       this.url = createURL(url);
+       this.url = url;
     }
 
     public JsonObject findByName(String name) {
@@ -60,20 +60,10 @@ public class PokemonSearch implements SearchEngine {
     private URL getURL(String name) {
         URL endpoint = null;
         try {
-            endpoint = new URL(url, name + "/");
+            endpoint = new URL(url + name + "/");
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
         return endpoint;
-    }
-
-    private URL createURL(String stringURL) {
-        URL url = null;
-        try {
-            this.url = new URL(stringURL);
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
-        return url;
     }
 }

@@ -10,7 +10,7 @@ public class SearchTest {
     @Test
     public void getsAFakeJSONResponse() {
         SearchFake fake = new SearchFake();
-        JsonObject response = fake.findByName("pika");
+        JsonObject response = fake.findByName("pikachu");
         assertEquals("pikachu", response.get("name").getAsString());
     }
 }

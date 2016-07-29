@@ -4,7 +4,7 @@ plugins {
 }
 
 group 'PokemonManager'
-version '0.2.0'
+version '0.2.1'
 
 apply plugin: 'java'
 
@@ -33,4 +33,14 @@ jacocoTestReport {
                     ])
         })
     }
+}
+
+
+task(run, dependsOn: 'classes', type: JavaExec) {
+    main = "pkmncore.Main"
+    classpath = sourceSets.main.runtimeClasspath
+}
+
+run {
+    standardInput = System.in
 }
