@@ -16,7 +16,7 @@ public class PokemonTest {
 
     @Test
     public void hasAHeight() {
-        assertEquals(1, pokemon.getHeight());
+        assertEquals("1", pokemon.getHeight());
     }
 
     @Test

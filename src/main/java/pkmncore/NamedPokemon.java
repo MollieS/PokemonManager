@@ -3,12 +3,12 @@ package pkmncore;
 public class NamedPokemon implements Pokemon {
 
     private String name;
-    private int height;
+    private String height;
     private String[] abilities;
 
     public NamedPokemon(String name, int height, String[] abilities) {
         this.name = name;
-        this.height = height;
+        this.height = String.valueOf(height);
         this.abilities = abilities;
     }
 
@@ -16,7 +16,7 @@ public class NamedPokemon implements Pokemon {
         return name;
     }
 
-    public int getHeight() {
+    public String getHeight() {
         return height;
     }
 

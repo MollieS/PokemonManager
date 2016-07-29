@@ -29,7 +29,7 @@ public class PokemonSearch implements SearchEngine {
         try {
             return parseResponse(response);
         } catch (Exception e) {
-            throwPokemonError();
+            throwPokemonError("pokemon not found");
         }
         return null;
     }
@@ -38,12 +38,12 @@ public class PokemonSearch implements SearchEngine {
         return new JsonParser().parse(response).getAsJsonObject();
     }
 
-    private String getResponse(URLConnection connection) {
+    private String getResponse(URLConnection connection) throws PokemonError {
         String response = null;
         try {
             response = readResponse(connection);
         } catch (IOException e) {
-            e.printStackTrace();
+            throwPokemonError("response could not be read");
         }
         return response;
     }
@@ -55,27 +55,27 @@ public class PokemonSearch implements SearchEngine {
         return response;
     }
 
-    private void throwPokemonError() throws PokemonError {
-        throw new PokemonError("That pokemon does not exist");
+    private void throwPokemonError(String error) throws PokemonError {
+            throw new PokemonError(error);
     }
 
-    private URLConnection connectToEndPoint(URL url) {
+    private URLConnection connectToEndPoint(URL url) throws PokemonError {
         URLConnection connection = null;
         try {
             connection = url.openConnection();
         } catch (IOException e) {
-            e.printStackTrace();
+            throwPokemonError("cannot connect to url");
         }
         connection.setRequestProperty("User-Agent", "pokemon");
         return connection;
     }
 
-    private URL getURL(String name) {
+    private URL getURL(String name) throws PokemonError {
         URL endpoint = null;
         try {
             endpoint = new URL(url + name + "/");
         } catch (MalformedURLException e) {
-            e.printStackTrace();
+            throwPokemonError("url is invalid");
         }
         return endpoint;
     }

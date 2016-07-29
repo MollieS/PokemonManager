@@ -4,7 +4,7 @@ public interface Pokemon {
 
     String getName();
 
-    int getHeight();
+    String getHeight();
 
     String[] getAbilities();
 
@@ -14,8 +14,8 @@ public interface Pokemon {
             return "This pokemon does not exist";
         }
 
-        public int getHeight() {
-            return 0;
+        public String getHeight() {
+            return new String();
         }
 
         public String[] getAbilities() {
