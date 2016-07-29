@@ -1,26 +1,25 @@
 package pkmncore;
 
-public class Pokemon {
+public interface Pokemon {
 
-    private String name;
-    private int height;
-    private String[] abilities;
+    String getName();
 
-    public Pokemon(String name, int height, String[] abilities) {
-        this.name = name;
-        this.height = height;
-        this.abilities = abilities;
-    }
+    int getHeight();
 
-    public String getName() {
-        return name;
-    }
+    String[] getAbilities();
 
-    public int getHeight() {
-        return height;
-    }
+    public static final Pokemon NULL = new Pokemon() {
 
-    public String[] getAbilities() {
-        return abilities;
-    }
+        public String getName() {
+            return "This pokemon does not exist";
+        }
+
+        public int getHeight() {
+            return 0;
+        }
+
+        public String[] getAbilities() {
+            return new String[0];
+        }
+    };
 }

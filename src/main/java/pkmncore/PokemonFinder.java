@@ -6,19 +6,34 @@ import com.google.gson.JsonObject;
 public class PokemonFinder {
 
     private SearchEngine searchEngine;
+    private boolean isFound;
 
     public PokemonFinder(SearchEngine search) {
         this.searchEngine = search;
     }
 
     public Pokemon find(String name) {
+        JsonObject pokemonData = getPokemonData(name);
+        return returnPokemon(pokemonData);
+    }
+
+    private Pokemon returnPokemon(JsonObject pokemonData) {
+        if (isFound) {
+            return new NamedPokemon(findName(pokemonData), findHeight(pokemonData), findAbilities(pokemonData));
+        } else {
+            return Pokemon.NULL;
+        }
+    }
+
+    private JsonObject getPokemonData(String name) {
         JsonObject pokemonData = null;
         try {
+            this.isFound = true;
             pokemonData = searchEngine.findByName(name);
         } catch (PokemonError pokemonError) {
-            pokemonError.getMessage();
+            this.isFound = false;
         }
-        return new Pokemon(findName(pokemonData), findHeight(pokemonData), findAbilities(pokemonData));
+        return pokemonData;
     }
 
     public int findHeight(JsonObject data) {

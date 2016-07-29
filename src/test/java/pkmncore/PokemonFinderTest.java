@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class PokemonFinderTest {
 
@@ -36,6 +37,15 @@ public class PokemonFinderTest {
         assertEquals(4, pokemon.getHeight());
         assertEquals("lightning-rod", pokemon.getAbilities()[0]);
         assertEquals("static", pokemon.getAbilities()[1]);
+    }
+
+    @Test
+    public void returnsANullPokemonIfNameIsNotFound() {
+        Pokemon pokemon = pokemonFinder.find("Mollie");
+        assertEquals(Pokemon.NULL, pokemon);
+        assertEquals("This pokemon does not exist", pokemon.getName());
+        assertEquals(0, pokemon.getHeight());
+        assertTrue(pokemon.getAbilities().length == 0);
     }
 
     @Test
