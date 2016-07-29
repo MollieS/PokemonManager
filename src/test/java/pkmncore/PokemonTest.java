@@ -3,6 +3,7 @@ package pkmncore;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class PokemonTest {
 
@@ -22,5 +23,6 @@ public class PokemonTest {
     public void hasAbilities() {
         assertEquals("lightning-rod", pokemon.getAbilities()[0]);
         assertEquals("static", pokemon.getAbilities()[1]);
+        assertTrue(pokemon.getAbilities().length == 2);
     }
 }
