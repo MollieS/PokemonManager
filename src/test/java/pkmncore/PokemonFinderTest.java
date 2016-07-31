@@ -18,7 +18,7 @@ public class PokemonFinderTest {
     @Test
     public void findsPokemonHeight() {
         Pokemon pokemon = pokemonFinder.find("pikachu");
-        assertEquals(4, pokemon.getHeight());
+        assertEquals("4", pokemon.getHeight());
     }
 
     @Test
@@ -31,7 +31,21 @@ public class PokemonFinderTest {
     }
 
     @Test
-    public void formatsQuery() {
+    public void returnsANullPokemonIfNameIsNotFound() {
+        Pokemon pokemon = pokemonFinder.find("Mollie");
+        assertEquals(Pokemon.NULL, pokemon);
+        assertEquals("This pokemon does not exist", pokemon.getName());
+        assertEquals(new String(), pokemon.getHeight());
+        assertTrue(pokemon.getAbilities().length == 0);
+    }
+
+    @Test
+    public void changesQueryToLowerCase() {
         assertEquals("pikachu", pokemonFinder.formatQuery("Pikachu"));
+    }
+
+    @Test
+    public void stripsWhiteSpace() {
+        assertEquals("bulbasaur", pokemonFinder.formatQuery("bulbasaur "));
     }
 }

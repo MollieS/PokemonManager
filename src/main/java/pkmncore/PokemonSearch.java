@@ -11,30 +11,39 @@ import java.net.URL;
 import java.net.URLConnection;
 
 public class PokemonSearch implements SearchEngine {
-    
+
     private String url;
-    
+
     public PokemonSearch(String url) {
-       this.url = url;
+        this.url = url;
     }
 
-    public JsonObject findByName(String name) {
+    public JsonObject findByName(String name) throws PokemonError {
         URL endpoint = getURL(name);
         URLConnection connection = connectToEndPoint(endpoint);
         String response = getResponse(connection);
-        return parseResponse(response);
+        return returnResponse(response);
+    }
+
+    private JsonObject returnResponse(String response) throws PokemonError {
+        try {
+            return parseResponse(response);
+        } catch (Exception e) {
+            throwPokemonError("pokemon not found");
+        }
+        return null;
     }
 
     private JsonObject parseResponse(String response) {
         return new JsonParser().parse(response).getAsJsonObject();
     }
 
-    private String getResponse(URLConnection connection) {
+    private String getResponse(URLConnection connection) throws PokemonError {
         String response = null;
         try {
             response = readResponse(connection);
         } catch (IOException e) {
-            e.printStackTrace();
+            throwPokemonError("response could not be read");
         }
         return response;
     }
@@ -46,23 +55,27 @@ public class PokemonSearch implements SearchEngine {
         return response;
     }
 
-    private URLConnection connectToEndPoint(URL url) {
+    private void throwPokemonError(String error) throws PokemonError {
+            throw new PokemonError(error);
+    }
+
+    private URLConnection connectToEndPoint(URL url) throws PokemonError {
         URLConnection connection = null;
         try {
             connection = url.openConnection();
         } catch (IOException e) {
-            e.printStackTrace();
+            throwPokemonError("cannot connect to url");
         }
         connection.setRequestProperty("User-Agent", "pokemon");
         return connection;
     }
 
-    private URL getURL(String name) {
+    private URL getURL(String name) throws PokemonError {
         URL endpoint = null;
         try {
             endpoint = new URL(url + name + "/");
         } catch (MalformedURLException e) {
-            e.printStackTrace();
+            throwPokemonError("url is invalid");
         }
         return endpoint;
     }

@@ -7,7 +7,7 @@ import static org.junit.Assert.assertTrue;
 
 public class PokemonTest {
 
-    private Pokemon pokemon = new Pokemon("Pikachu", 1, new String[]{"lightning-rod", "static"});
+    private NamedPokemon pokemon = new NamedPokemon("Pikachu", 1, new String[]{"lightning-rod", "static"});
 
     @Test
     public void hasAName() {
@@ -16,7 +16,7 @@ public class PokemonTest {
 
     @Test
     public void hasAHeight() {
-        assertEquals(1, pokemon.getHeight());
+        assertEquals("1", pokemon.getHeight());
     }
 
     @Test
