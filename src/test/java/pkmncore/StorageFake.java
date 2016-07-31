@@ -23,6 +23,9 @@ public class StorageFake implements StorageUnit {
     }
 
     public List<List<String>> getPokemon() throws PokemonError {
+        if (pokemon.isEmpty()) {
+            throw new PokemonError("No pokemon!");
+        }
         return pokemon;
     }
 

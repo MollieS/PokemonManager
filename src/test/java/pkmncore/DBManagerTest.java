@@ -5,6 +5,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 
@@ -13,7 +14,7 @@ import static org.junit.Assert.assertTrue;
 
 public class DBManagerTest {
 
-    private DBManager dbManager = new DBManager("jdbc:postgresql://127.0.0.1:5432/pokemon_test", "test", "test");
+    private DBManager dbManager = new DBManager("jdbc:postgresql://127.0.0.1:5432/pokemon_test", "test", "test", "org.postgresql.Driver");
 
     @After
     public void tearDown() throws Exception {
@@ -46,6 +47,12 @@ public class DBManagerTest {
         connection.close();
     }
 
+    @Test(expected = PokemonError.class)
+    public void throwsErrorForInvalidDriver() throws PokemonError, SQLException {
+        DBManager dbManager = new DBManager("jdbc:postgresql://127.0.0.1:5432/pokemon_test", "test", "test", "not a driver");
+        Connection connection = dbManager.getConnection();
+    }
+
     @Test
     public void savesAPokemonDetails() throws Exception {
         dbManager.save("pikachu", "4", new String[]{"lightning-rod", "static"});
@@ -72,5 +79,11 @@ public class DBManagerTest {
         List<List<String>> pokemon = dbManager.getPokemon();
         assertTrue(pokemon.size() == 1);
         assertTrue(pokemon.get(0).size() == 4);
+    }
+
+    @Test
+    public void returnsEmptyListIfNoPokemonSaved() throws PokemonError {
+        List<List<String>> pokemon = dbManager.getPokemon();
+        assertTrue(pokemon.isEmpty());
     }
 }

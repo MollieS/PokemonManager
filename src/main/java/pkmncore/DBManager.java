@@ -9,132 +9,104 @@ public class DBManager implements StorageUnit {
     final private String dbURL;
     final private String username;
     final private String password;
+    final private String driver;
 
-    public DBManager(String dbURL, String username, String password) {
+    public DBManager(String dbURL, String username, String password, String driver) {
         this.dbURL = dbURL;
         this.username = username;
         this.password = password;
+        this.driver = driver;
     }
 
-    public Connection getConnection() throws PokemonError {
+    public Connection getConnection() throws PokemonError, SQLException {
         setDriver();
         return connectToDB();
     }
 
     public void save(String name, String height, String[] abilities) throws PokemonError {
-        Connection connection = getConnection();
-        Statement statement = createStatement(connection);
-        saveNameAndHeight(name, height, statement);
-        saveAbilites(name, abilities, statement);
-        closeConnections(connection, statement);
+        savePokemonDetails(name, height, abilities);
     }
 
     public List<List<String>> getPokemon() throws PokemonError {
-        Connection connection = getConnection();
-        Statement statement = createStatement(connection);
-        String sql = "SELECT * FROM POKEMON;";
-        List<List<String>> pokemon = listPokemon(connection, getCaughtPokemon(statement, sql));
-        closeConnections(connection, statement);
-        return pokemon;
+        return getAllPokemon();
     }
 
-    private List<List<String>> listPokemon(Connection connection, ResultSet caughtPokemon) throws PokemonError{
-        List<List<String>> allPokemon = new ArrayList<List<String>>();
+    private void savePokemonDetails(String name, String height, String[] abilities) throws PokemonError {
         try {
-            while (caughtPokemon.next()) {
-                List<String> pokemon = new ArrayList<String>();
-                pokemon.add(caughtPokemon.getString("name"));
-                pokemon.add(caughtPokemon.getString("height"));
-                getAbilities(pokemon, connection);
-                allPokemon.add(pokemon);
-            }
+            Connection connection = getConnection();
+            Statement statement = connection.createStatement();
+            saveNameAndHeight(name, height, statement);
+            saveAbilites(name, abilities, statement);
+            closeConnections(connection, statement);
         } catch (SQLException e) {
-            throw new PokemonError("Error listing caught pokemon: " + e.getMessage());
+            throw new PokemonError(name + " has already been caught!");
+        }
+    }
+
+    private List<List<String>> getAllPokemon() throws PokemonError {
+        try {
+            Connection connection = getConnection();
+            Statement statement = connection.createStatement();
+            String sql = "SELECT * FROM POKEMON;";
+            List<List<String>> pokemon = listPokemon(connection, statement.executeQuery(sql));
+            closeConnections(connection, statement);
+            return pokemon;
+        } catch (SQLException e) {
+            throw new PokemonError("No pokemon have been caught!");
+        }
+    }
+
+    private List<List<String>> listPokemon(Connection connection, ResultSet caughtPokemon) throws SQLException {
+        List<List<String>> allPokemon = new ArrayList<List<String>>();
+        while (caughtPokemon.next()) {
+            List<String> pokemon = new ArrayList<String>();
+            pokemon.add(caughtPokemon.getString("name"));
+            pokemon.add(caughtPokemon.getString("height"));
+            getAbilities(pokemon, connection);
+            allPokemon.add(pokemon);
         }
         return allPokemon;
     }
 
-    private ResultSet getCaughtPokemon(Statement statement, String sql) throws PokemonError {
-        ResultSet pokemon;
-        try {
-            pokemon = statement.executeQuery(sql);
-        } catch (SQLException e) {
-            throw new PokemonError("Error getting data: " + e.getMessage());
-        }
-        return pokemon;
-    }
-
-    private void getAbilities(List<String> pokemon, Connection connection) throws PokemonError {
-        Statement statement = createStatement(connection);
+    private void getAbilities(List<String> pokemon, Connection connection) throws SQLException {
+        Statement statement = connection.createStatement();
         String sql = "SELECT * FROM ABILITIES WHERE (name) = '" + pokemon.get(0) + "';";
-        ResultSet abilities = getCaughtPokemon(statement, sql);
+        ResultSet abilities = statement.executeQuery(sql);
         listAbilities(pokemon, abilities);
     }
 
-    private void listAbilities(List<String> pokemon, ResultSet abilities) throws PokemonError {
-        try {
-            while (abilities.next()) {
-                pokemon.add(abilities.getString("ability"));
-            }
-        } catch (SQLException e) {
-            throw new PokemonError("Error listing abilities: " + e.getMessage());
+    private void listAbilities(List<String> pokemon, ResultSet abilities) throws SQLException {
+        while (abilities.next()) {
+            pokemon.add(abilities.getString("ability"));
         }
     }
 
     private void setDriver() throws PokemonError {
         try {
-            Class.forName("org.postgresql.Driver");
+            Class.forName(driver);
         } catch (ClassNotFoundException e) {
-            throw new PokemonError("Error getting driver: " + e.getMessage());
+            throw new PokemonError("Invalid driver");
         }
     }
 
-    private Connection connectToDB() throws PokemonError {
-        Connection connection;
-        try {
-            connection = DriverManager.getConnection(dbURL, username, password);
-        } catch (SQLException e) {
-            throw new PokemonError("Error getting db connection: " + e.getMessage());
-        }
-        return connection;
+    private Connection connectToDB() throws SQLException {
+        return DriverManager.getConnection(dbURL, username, password);
     }
 
-    private Statement createStatement(Connection connection) throws PokemonError {
-        Statement statement;
-        try {
-            statement =  connection.createStatement();
-        } catch (SQLException e) {
-            throw new PokemonError("Error creating statement: " + e.getMessage());
-        }
-        return statement;
+    private void closeConnections(Connection connection, Statement statement) throws SQLException {
+        connection.close();
+        statement.close();
     }
 
-    private void executeStatement(Statement statement, String sql) throws PokemonError {
-        try {
-            statement.execute(sql);
-        } catch (SQLException e) {
-            throw new PokemonError("Error executing statement: " + e.getMessage());
-        }
-    }
-
-    private void closeConnections(Connection connection, Statement statement) throws PokemonError {
-        try {
-            connection.close();
-            statement.close();
-        } catch (SQLException e) {
-            throw new PokemonError("Error closing connections: " + e.getMessage());
-        }
-    }
-
-    private void saveNameAndHeight(String name, String height, Statement statement) throws PokemonError {
+    private void saveNameAndHeight(String name, String height, Statement statement) throws SQLException {
         String sql = "INSERT INTO POKEMON (name, height) VALUES ('" + name + "', '" + height + "');";
-        executeStatement(statement, sql);
+        statement.execute(sql);
     }
 
-    private void saveAbilites(String name, String[] abilities, Statement statement) throws PokemonError {
+    private void saveAbilites(String name, String[] abilities, Statement statement) throws SQLException {
         for (String ability : abilities) {
             String sql = "INSERT INTO ABILITIES (name, ability) VALUES ('" + name + "', '" + ability + "');";
-            executeStatement(statement, sql);
+            statement.execute(sql);
         }
     }
 }
