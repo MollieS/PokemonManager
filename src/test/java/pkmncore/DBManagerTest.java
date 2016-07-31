@@ -1,6 +1,5 @@
 package pkmncore;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -15,18 +14,6 @@ import static org.junit.Assert.assertTrue;
 public class DBManagerTest {
 
     private DBManager dbManager = new DBManager("jdbc:postgresql://127.0.0.1:5432/pokemon_test", "test", "test", "org.postgresql.Driver");
-
-    @After
-    public void tearDown() throws Exception {
-        Connection connection = dbManager.getConnection();
-        String sql = "DROP TABLE POKEMON;";
-        String sql2 = "DROP TABLE ABILITIES;";
-        Statement statement = connection.createStatement();
-        statement.execute(sql);
-        statement.execute(sql2);
-        statement.close();
-        connection.close();
-    }
 
     @Before
     public void setUp() throws Exception {
@@ -45,12 +32,26 @@ public class DBManagerTest {
         Connection connection = dbManager.getConnection();
         assertTrue(connection != null);
         connection.close();
+        tearDown();
     }
 
     @Test(expected = PokemonError.class)
-    public void throwsErrorForInvalidDriver() throws PokemonError, SQLException {
+    public void throwsErrorForInvalidDriver() throws Exception {
         DBManager dbManager = new DBManager("jdbc:postgresql://127.0.0.1:5432/pokemon_test", "test", "test", "not a driver");
+        dbManager.getConnection();
+        tearDown();
+    }
+
+    @Test(expected = PokemonError.class)
+    public void throwsErrorifDatabaseErrors() throws PokemonError, SQLException {
+        dbManager.save("pikachu", "4", new String[]{"lightning-rod", "static"});
         Connection connection = dbManager.getConnection();
+        String sql = "DROP TABLE POKEMON;";
+        Statement statement = connection.createStatement();
+        statement.execute(sql);
+        dbManager.getPokemon();
+        statement.close();
+        connection.close();
     }
 
     @Test
@@ -61,6 +62,7 @@ public class DBManagerTest {
         assertEquals("4", pokemon.get(1));
         assertEquals("lightning-rod", pokemon.get(2));
         assertEquals("static", pokemon.get(3));
+        tearDown();
     }
 
     @Test
@@ -70,6 +72,7 @@ public class DBManagerTest {
         List<List<String>> allPokemon = dbManager.getPokemon();
         assertEquals(allPokemon.get(0).get(0), "pikachu");
         assertEquals(allPokemon.get(1).get(0), "bulbasaur");
+        tearDown();
     }
 
     @Test(expected = PokemonError.class)
@@ -79,11 +82,24 @@ public class DBManagerTest {
         List<List<String>> pokemon = dbManager.getPokemon();
         assertTrue(pokemon.size() == 1);
         assertTrue(pokemon.get(0).size() == 4);
+        tearDown();
     }
 
     @Test
-    public void returnsEmptyListIfNoPokemonSaved() throws PokemonError {
+    public void returnsEmptyListIfNoPokemonSaved() throws Exception {
         List<List<String>> pokemon = dbManager.getPokemon();
         assertTrue(pokemon.isEmpty());
+        tearDown();
+    }
+
+    private void tearDown() throws Exception {
+        Connection connection = dbManager.getConnection();
+        String sql = "DROP TABLE POKEMON;";
+        String sql2 = "DROP TABLE ABILITIES;";
+        Statement statement = connection.createStatement();
+        statement.execute(sql);
+        statement.execute(sql2);
+        statement.close();
+        connection.close();
     }
 }

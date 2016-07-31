@@ -52,7 +52,7 @@ public class DBManager implements StorageUnit {
             closeConnections(connection, statement);
             return pokemon;
         } catch (SQLException e) {
-            throw new PokemonError("No pokemon have been caught!");
+            throw new PokemonError("Something is wrong with the database!");
         }
     }
 
