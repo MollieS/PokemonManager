@@ -4,7 +4,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DBManager {
+public class DBManager implements StorageUnit {
 
     final private String dbURL;
     final private String username;
@@ -28,7 +28,6 @@ public class DBManager {
         saveAbilites(name, abilities, statement);
         closeConnections(connection, statement);
     }
-
 
     public List<List<String>> getPokemon() throws PokemonError {
         Connection connection = getConnection();

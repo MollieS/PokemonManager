@@ -19,7 +19,7 @@ public class PokemonFinder {
 
     private Pokemon returnPokemon(JsonObject pokemonData) {
         if (isFound) {
-            return new NamedPokemon(findName(pokemonData), findHeight(pokemonData), findAbilities(pokemonData));
+            return new NamedPokemon(findDetail(pokemonData, "name"), findDetail(pokemonData, "height"), findAbilities(pokemonData));
         } else {
             return Pokemon.NULL;
         }
@@ -36,12 +36,8 @@ public class PokemonFinder {
         return pokemonData;
     }
 
-    public int findHeight(JsonObject data) {
-        return data.get("height").getAsInt();
-    }
-
-    public String findName(JsonObject data) {
-        return data.get("name").getAsString();
+    public String findDetail(JsonObject data, String detail) {
+        return data.get(detail).getAsString();
     }
 
     public String[] findAbilities(JsonObject pokemonData) {
