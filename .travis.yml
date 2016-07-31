@@ -9,7 +9,7 @@ services:
 before_script:
 - psql -c "create database pokemon_test;" -U postgres
 - psql -c "create user test with password 'test';" -U postgres
-- psql -c "grant all privileges on database test to test;" -U postgres
+- psql -c "grant all privileges on database pokemon_test to test;" -U postgres
 
 after_success:
     ./gradlew jacocoTestReport coveralls
