@@ -1,6 +1,9 @@
 package pkmncore;
 
 import org.junit.Test;
+import pkmncore.pokemon.Pokemon.NamedPokemon;
+import pkmncore.storage.PokemonManager;
+import pkmncore.testfakes.StorageFake;
 
 import java.util.List;
 

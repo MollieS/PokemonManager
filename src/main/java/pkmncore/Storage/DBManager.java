@@ -1,4 +1,7 @@
-package pkmncore;
+package pkmncore.storage;
+
+import pkmncore.PokemonError;
+import pkmncore.StorageUnit;
 
 import java.sql.*;
 import java.util.ArrayList;

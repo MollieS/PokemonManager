@@ -1,4 +1,7 @@
-package pkmncore;
+package pkmncore.testfakes;
+
+import pkmncore.PokemonError;
+import pkmncore.StorageUnit;
 
 import java.util.ArrayList;
 import java.util.List;

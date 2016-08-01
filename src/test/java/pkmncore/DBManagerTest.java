@@ -1,10 +1,11 @@
 package pkmncore;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import pkmncore.storage.DBManager;
 
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 
@@ -32,7 +33,6 @@ public class DBManagerTest {
         Connection connection = dbManager.getConnection();
         assertTrue(connection != null);
         connection.close();
-        tearDown();
     }
 
     @Test(expected = PokemonError.class)
@@ -43,7 +43,7 @@ public class DBManagerTest {
     }
 
     @Test(expected = PokemonError.class)
-    public void throwsErrorifDatabaseErrors() throws PokemonError, SQLException {
+    public void throwsErrorifDatabaseErrors() throws Exception {
         dbManager.save("pikachu", "4", new String[]{"lightning-rod", "static"});
         Connection connection = dbManager.getConnection();
         String sql = "DROP TABLE POKEMON;";
@@ -70,8 +70,8 @@ public class DBManagerTest {
         dbManager.save("pikachu", "4", new String[]{"lightning-rod", "static"});
         dbManager.save("bulbasaur", "4", new String[]{"growth", "plant"});
         List<List<String>> allPokemon = dbManager.getPokemon();
-        assertEquals(allPokemon.get(0).get(0), "pikachu");
-        assertEquals(allPokemon.get(1).get(0), "bulbasaur");
+        assertEquals("pikachu", allPokemon.get(0).get(0));
+        assertEquals("bulbasaur", allPokemon.get(1).get(0));
         tearDown();
     }
 
@@ -92,7 +92,7 @@ public class DBManagerTest {
         tearDown();
     }
 
-    private void tearDown() throws Exception {
+    public void tearDown() throws Exception {
         Connection connection = dbManager.getConnection();
         String sql = "DROP TABLE POKEMON;";
         String sql2 = "DROP TABLE ABILITIES;";
