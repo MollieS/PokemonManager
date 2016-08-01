@@ -61,4 +61,8 @@ public class PokemonManager {
             throw new PokemonError("This is not a pokemon");
         }
     }
+
+    public void setFree(String name) throws PokemonError {
+        storage.delete(name);
+    }
 }

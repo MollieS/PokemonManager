@@ -52,4 +52,17 @@ public class PokemonManagerTest {
         Pokemon pokemon = Pokemon.NULL;
         pokemonManager.catchPokemon(pokemon);
     }
+
+    @Test
+    public void canSetAPokemonFree() throws PokemonError {
+        Pokemon pokemon = new NamedPokemon("charmander", "8", new String[]{"flame-body", "lava"});
+        pokemonManager.catchPokemon(pokemon);
+        pokemonManager.setFree("charmander");
+        List<Pokemon> caughtPokemon = pokemonManager.viewCaughtPokemon();
+        assertTrue(caughtPokemon.isEmpty());
+    }
+
+    @Test
+    public void throwsAnErrorIfPokemonIsNotCaught() {
+    }
 }

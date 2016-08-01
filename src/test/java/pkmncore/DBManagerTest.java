@@ -1,5 +1,6 @@
 package pkmncore;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -37,7 +38,6 @@ public class DBManagerTest {
     public void throwsErrorForInvalidDriver() throws Exception {
         DBManager dbManager = new DBManager("jdbc:postgresql://127.0.0.1:5432/pokemon_test", "test", "test", "not a driver");
         dbManager.getPokemon();
-        tearDown();
     }
 
     @Test(expected = PokemonError.class)
@@ -54,46 +54,57 @@ public class DBManagerTest {
 
     @Test
     public void savesAPokemonDetails() throws Exception {
-        dbManager.save("pikachu", "4", new String[]{"lightning-rod", "static"});
+        dbManager.save("bulbasaur", "4", new String[]{"growth", "plant"});
         List<String> pokemon = dbManager.getPokemon().get(0);
-        assertEquals("pikachu", pokemon.get(0));
+        assertEquals("bulbasaur", pokemon.get(0));
         assertEquals("4", pokemon.get(1));
-        assertEquals("lightning-rod", pokemon.get(2));
-        assertEquals("static", pokemon.get(3));
-        tearDown();
+        assertEquals("growth", pokemon.get(2));
+        assertEquals("plant", pokemon.get(3));
     }
 
     @Test
     public void canSaveManyPokemon() throws Exception {
-        dbManager.save("pikachu", "4", new String[]{"lightning-rod", "static"});
-        dbManager.save("bulbasaur", "4", new String[]{"growth", "plant"});
+        dbManager.save("charmander", "8", new String[]{"flame-body", "lava"});
+        dbManager.save("squirtle", "6", new String[]{"bubble", "aqua-tail"});
         List<List<String>> allPokemon = dbManager.getPokemon();
-        assertEquals(allPokemon.get(0).get(0), "pikachu");
-        assertEquals(allPokemon.get(1).get(0), "bulbasaur");
-        tearDown();
+        assertEquals(allPokemon.get(0).get(0), "charmander");
+        assertEquals(allPokemon.get(1).get(0), "squirtle");
     }
 
     @Test(expected = PokemonError.class)
     public void cannotSaveSamePokemonTwice() throws Exception {
-        dbManager.save("pikachu", "4", new String[]{"lightning-rod", "static"});
-        dbManager.save("pikachu", "4", new String[]{"lightning-rod", "static"});
+        dbManager.save("wartortle", "6", new String[]{"bubble", "aqua-tail"});
+        dbManager.save("wartortle", "6", new String[]{"bubble", "aqua-tail"});
         List<List<String>> pokemon = dbManager.getPokemon();
         assertTrue(pokemon.size() == 1);
         assertTrue(pokemon.get(0).size() == 4);
-        tearDown();
     }
 
     @Test
     public void returnsEmptyListIfNoPokemonSaved() throws Exception {
         List<List<String>> pokemon = dbManager.getPokemon();
         assertTrue(pokemon.isEmpty());
-        tearDown();
     }
 
-    private void tearDown() throws Exception {
+    @Test
+    public void canDeleteAPokemon() throws Exception {
+        dbManager.save("lapras", "24", new String[]{"ice-storm", "mist"});
+        List<List<String>> caughtPokemon = dbManager.getPokemon();
+        dbManager.delete("lapras");
+        List<List<String>> pokemon = dbManager.getPokemon();
+        assertTrue(pokemon.isEmpty());
+    }
+
+    @Test(expected = PokemonError.class)
+    public void throwsAnErrorIfPokemonDeletedIsNotACaughtPokemon() throws PokemonError {
+        dbManager.delete("bulbasaur");
+    }
+
+    @After
+    public void tearDown() throws Exception {
         Connection connection = getConnection();
-        String sql = "DROP TABLE POKEMON;";
-        String sql2 = "DROP TABLE ABILITIES;";
+        String sql = "DROP TABLE IF EXISTS POKEMON;";
+        String sql2 = "DROP TABLE IF EXISTS ABILITIES;";
         Statement statement = connection.createStatement();
         statement.execute(sql);
         statement.execute(sql2);

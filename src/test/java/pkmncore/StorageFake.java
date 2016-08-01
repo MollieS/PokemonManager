@@ -29,6 +29,16 @@ public class StorageFake implements StorageUnit {
         return pokemon;
     }
 
+    public void delete(String name) throws PokemonError {
+        int toDelete = -10;
+        for (int i = 0; i < pokemon.size(); i++) {
+            if (name.equals(pokemon.get(i).get(0))) {
+                toDelete = i;
+            }
+        }
+        pokemon.remove(toDelete);
+    }
+
     private void addAbilites(String[] abilities, List<String> details) {
         for (String ability : abilities) {
             details.add(ability);
