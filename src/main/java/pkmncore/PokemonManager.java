@@ -20,17 +20,16 @@ public class PokemonManager {
         List<Pokemon> caughtPokemon = new ArrayList<Pokemon>();
         List<List<String>> allPokemon = getPokemon();
         for (List<String> pokemonDetails : allPokemon) {
-            getDetails(caughtPokemon, pokemonDetails);
+            caughtPokemon.add(createPokemon(pokemonDetails));
         }
         return caughtPokemon;
     }
 
-    private void getDetails(List<Pokemon> caughtPokemon, List<String> pokemonDetails) {
+    private Pokemon createPokemon(List<String> pokemonDetails) {
         String name = pokemonDetails.remove(0);
         String height = pokemonDetails.remove(0);
         String[] abilities = getAbilities(pokemonDetails);
-        Pokemon pokemon = new NamedPokemon(name, height, abilities);
-        caughtPokemon.add(pokemon);
+        return new NamedPokemon(name, height, abilities);
     }
 
     private String[] getAbilities(List<String> pokemonDetails) {
@@ -42,12 +41,10 @@ public class PokemonManager {
     }
 
     private List<List<String>> getPokemon() {
-        List<List<String>> pokemon = new ArrayList<List<String>>();
         try {
-            pokemon = storage.getPokemon();
-            return pokemon;
+            return storage.getPokemon();
         } catch (PokemonError pokemonError) {
-            return pokemon;
+            return new ArrayList<List<String>>();
         }
     }
 
