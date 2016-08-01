@@ -3,6 +3,7 @@ package pkmncore;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import pkmncore.storage.DBManager;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

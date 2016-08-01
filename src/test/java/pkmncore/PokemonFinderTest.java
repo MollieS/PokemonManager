@@ -1,6 +1,8 @@
 package pkmncore;
 
 import org.junit.Test;
+import pkmncore.search.PokemonFinder;
+import pkmncore.testfakes.SearchFake;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;

@@ -1,7 +1,9 @@
-package pkmncore;
+package pkmncore.search;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import pkmncore.PokemonError;
+import pkmncore.SearchEngine;
 
 import java.io.BufferedReader;
 import java.io.IOException;

@@ -1,4 +1,9 @@
-package pkmncore;
+package pkmncore.storage;
+
+import pkmncore.Pokemon;
+import pkmncore.PokemonError;
+import pkmncore.StorageUnit;
+import pkmncore.pokemon.NamedPokemon;
 
 import java.util.ArrayList;
 import java.util.List;
