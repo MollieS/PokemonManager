@@ -18,7 +18,7 @@ public class DBManager implements StorageUnit {
         this.driver = driver;
     }
 
-    public Connection getConnection() throws PokemonError, SQLException {
+    private Connection getConnection() throws PokemonError, SQLException {
         setDriver();
         return connectToDB();
     }
@@ -52,7 +52,7 @@ public class DBManager implements StorageUnit {
             closeConnections(connection, statement);
             return pokemon;
         } catch (SQLException e) {
-            throw new PokemonError("Something is wrong with the database!");
+            throw new PokemonError("Something is wrong with the database! " + e.getMessage());
         }
     }
 
@@ -62,30 +62,32 @@ public class DBManager implements StorageUnit {
             List<String> pokemon = new ArrayList<String>();
             pokemon.add(caughtPokemon.getString("name"));
             pokemon.add(caughtPokemon.getString("height"));
-            getAbilities(pokemon, connection);
+            pokemon = getAbilities(pokemon, connection);
             allPokemon.add(pokemon);
         }
         return allPokemon;
     }
 
-    private void getAbilities(List<String> pokemon, Connection connection) throws SQLException {
+    private List<String> getAbilities(List<String> pokemon, Connection connection) throws SQLException {
         Statement statement = connection.createStatement();
         String sql = "SELECT * FROM ABILITIES WHERE (name) = '" + pokemon.get(0) + "';";
         ResultSet abilities = statement.executeQuery(sql);
-        listAbilities(pokemon, abilities);
+        pokemon = listAbilities(pokemon, abilities);
+        return pokemon;
     }
 
-    private void listAbilities(List<String> pokemon, ResultSet abilities) throws SQLException {
+    private List<String> listAbilities(List<String> pokemon, ResultSet abilities) throws SQLException {
         while (abilities.next()) {
             pokemon.add(abilities.getString("ability"));
         }
+        return pokemon;
     }
 
     private void setDriver() throws PokemonError {
         try {
             Class.forName(driver);
         } catch (ClassNotFoundException e) {
-            throw new PokemonError("Invalid driver");
+            throw new PokemonError("Invalid driver " + driver + "\n" + e.getMessage());
         }
     }
 
