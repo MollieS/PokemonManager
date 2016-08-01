@@ -66,6 +66,13 @@ pokemonManager.catchPokemon(pikachu);
 List<Pokemon> caughtPokemon = pokemonManager.viewCaughtPokemon();
 ```
 
+To set a pokemon free, PokemonManager has a set free method:
+
+```
+pokemonManager.setFree("pikachu");
+```
+
+
 ## To Test
 
 This project has been test driven.  To run the tests, clone the repository with `git clone git@github.com:MollieS/PokemonManagerCLI.git`
