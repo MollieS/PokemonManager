@@ -65,7 +65,8 @@ public class PokemonManagerTest {
         assertTrue(caughtPokemon.isEmpty());
     }
 
-    @Test
-    public void throwsAnErrorIfPokemonIsNotCaught() {
+    @Test(expected = PokemonError.class)
+    public void throwsAnErrorIfPokemonIsNotCaught() throws PokemonError {
+        pokemonManager.setFree("pikachu");
     }
 }

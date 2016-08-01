@@ -39,6 +39,9 @@ public class StorageFake implements StorageUnit {
                 toDelete = i;
             }
         }
+        if (toDelete == -10) {
+            throw new PokemonError("Not caught!");
+        }
         pokemon.remove(toDelete);
     }
 
