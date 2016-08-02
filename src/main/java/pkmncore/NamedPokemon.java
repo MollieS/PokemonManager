@@ -6,9 +6,9 @@ public class NamedPokemon implements Pokemon {
     private String height;
     private String[] abilities;
 
-    public NamedPokemon(String name, int height, String[] abilities) {
+    public NamedPokemon(String name, String height, String[] abilities) {
         this.name = name;
-        this.height = String.valueOf(height);
+        this.height = height;
         this.abilities = abilities;
     }
 
