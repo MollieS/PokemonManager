@@ -31,16 +31,18 @@ public class PokemonManager {
     }
 
     private Pokemon createPokemon(List<String> pokemonDetails) {
-        String name = pokemonDetails.remove(0);
-        String height = pokemonDetails.remove(0);
+        String name = pokemonDetails.get(0);
+        String height = pokemonDetails.get(1);
         String[] abilities = getAbilities(pokemonDetails);
         return new NamedPokemon(name, height, abilities);
     }
 
     private String[] getAbilities(List<String> pokemonDetails) {
-        String[] abilities = new String[pokemonDetails.size()];
-        for (int i = 0; i < pokemonDetails.size(); i++) {
-            abilities[i] = pokemonDetails.get(i);
+        String[] abilities = new String[pokemonDetails.size() - 2];
+        int index = 0;
+        for (int i = 2; i < pokemonDetails.size(); i++) {
+            abilities[index] = pokemonDetails.get(i);
+            index++;
         }
         return abilities;
     }
