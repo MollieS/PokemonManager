@@ -1,4 +1,9 @@
-package pkmncore;
+package pkmncore.storage;
+
+import pkmncore.Pokemon;
+import pkmncore.PokemonError;
+import pkmncore.StorageUnit;
+import pkmncore.pokemon.NamedPokemon;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -60,5 +65,9 @@ public class PokemonManager {
         if (pokemon.equals(Pokemon.NULL)) {
             throw new PokemonError("This is not a pokemon");
         }
+    }
+
+    public void setFree(String name) throws PokemonError {
+        storage.delete(name);
     }
 }

@@ -1,4 +1,7 @@
-package pkmncore;
+package pkmncore.testfakes;
+
+import pkmncore.PokemonError;
+import pkmncore.StorageUnit;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +30,19 @@ public class StorageFake implements StorageUnit {
             throw new PokemonError("No pokemon!");
         }
         return pokemon;
+    }
+
+    public void delete(String name) throws PokemonError {
+        int toDelete = -10;
+        for (int i = 0; i < pokemon.size(); i++) {
+            if (name.equals(pokemon.get(i).get(0))) {
+                toDelete = i;
+            }
+        }
+        if (toDelete == -10) {
+            throw new PokemonError("Not caught!");
+        }
+        pokemon.remove(toDelete);
     }
 
     private void addAbilites(String[] abilities, List<String> details) {

@@ -1,6 +1,9 @@
 package pkmncore;
 
 import org.junit.Test;
+import pkmncore.pokemon.NamedPokemon;
+import pkmncore.storage.PokemonManager;
+import pkmncore.testfakes.StorageFake;
 
 import java.util.List;
 
@@ -51,5 +54,19 @@ public class PokemonManagerTest {
     public void cannotCatchNullPokemon() throws PokemonError {
         Pokemon pokemon = Pokemon.NULL;
         pokemonManager.catchPokemon(pokemon);
+    }
+
+    @Test
+    public void canSetAPokemonFree() throws PokemonError {
+        Pokemon pokemon = new NamedPokemon("charmander", "8", new String[]{"flame-body", "lava"});
+        pokemonManager.catchPokemon(pokemon);
+        pokemonManager.setFree("charmander");
+        List<Pokemon> caughtPokemon = pokemonManager.viewCaughtPokemon();
+        assertTrue(caughtPokemon.isEmpty());
+    }
+
+    @Test(expected = PokemonError.class)
+    public void throwsAnErrorIfPokemonIsNotCaught() throws PokemonError {
+        pokemonManager.setFree("pikachu");
     }
 }
