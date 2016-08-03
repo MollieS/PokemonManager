@@ -1,9 +1,9 @@
-package pkmncore.search;
+package pokemonmanager.search;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import pkmncore.PokemonError;
-import pkmncore.SearchEngine;
+import pokemonmanager.PokemonError;
+import pokemonmanager.SearchEngine;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -31,9 +31,8 @@ public class PokemonSearch implements SearchEngine {
         try {
             return parseResponse(response);
         } catch (Exception e) {
-            throwPokemonError("pokemon not found");
+            throw new PokemonError("Pokemon not found!");
         }
-        return null;
     }
 
     private JsonObject parseResponse(String response) {

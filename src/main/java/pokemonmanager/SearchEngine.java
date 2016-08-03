@@ -1,4 +1,4 @@
-package pkmncore;
+package pokemonmanager;
 
 import com.google.gson.JsonObject;
 

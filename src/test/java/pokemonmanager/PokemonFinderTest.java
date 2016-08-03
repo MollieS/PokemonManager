@@ -1,8 +1,8 @@
-package pkmncore;
+package pokemonmanager;
 
 import org.junit.Test;
-import pkmncore.search.PokemonFinder;
-import pkmncore.testfakes.SearchFake;
+import pokemonmanager.search.PokemonFinder;
+import pokemonmanager.testfakes.SearchFake;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;

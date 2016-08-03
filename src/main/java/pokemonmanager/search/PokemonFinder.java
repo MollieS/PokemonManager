@@ -1,11 +1,11 @@
-package pkmncore.search;
+package pokemonmanager.search;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import pkmncore.Pokemon;
-import pkmncore.PokemonError;
-import pkmncore.SearchEngine;
-import pkmncore.pokemon.NamedPokemon;
+import pokemonmanager.Pokemon;
+import pokemonmanager.PokemonError;
+import pokemonmanager.SearchEngine;
+import pokemonmanager.pokemon.NamedPokemon;
 
 public class PokemonFinder {
 

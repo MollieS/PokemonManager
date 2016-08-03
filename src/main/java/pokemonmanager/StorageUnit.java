@@ -1,4 +1,4 @@
-package pkmncore;
+package pokemonmanager;
 
 import java.util.List;
 
