@@ -1,6 +1,6 @@
-package pkmncore.pokemon;
+package pokemonmanager.pokemon;
 
-import pkmncore.Pokemon;
+import pokemonmanager.Pokemon;
 
 public class NamedPokemon implements Pokemon {
 

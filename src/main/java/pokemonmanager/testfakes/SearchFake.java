@@ -1,9 +1,9 @@
-package pkmncore.testfakes;
+package pokemonmanager.testfakes;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import pkmncore.PokemonError;
-import pkmncore.SearchEngine;
+import pokemonmanager.PokemonError;
+import pokemonmanager.SearchEngine;
 
 public class SearchFake implements SearchEngine {
 

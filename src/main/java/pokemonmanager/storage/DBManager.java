@@ -1,7 +1,7 @@
-package pkmncore.storage;
+package pokemonmanager.storage;
 
-import pkmncore.PokemonError;
-import pkmncore.StorageUnit;
+import pokemonmanager.PokemonError;
+import pokemonmanager.StorageUnit;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -30,12 +30,23 @@ public class DBManager implements StorageUnit {
         savePokemonDetails(name, height, abilities);
     }
 
+    private void savePokemonDetails(String name, String height, String[] abilities) throws PokemonError {
+        try {
+            Connection connection = getConnection();
+            Statement statement = connection.createStatement();
+            saveNameAndHeight(name, height, statement);
+            saveAbilites(name, abilities, statement);
+            closeConnections(connection, statement);
+        } catch (SQLException e) {
+            throw new PokemonError(name + " has already been caught!");
+        }
+    }
+
     public List<List<String>> getPokemon() throws PokemonError {
         return getAllPokemon();
     }
 
     public void delete(String name) throws PokemonError {
-        ResultSet pokemon = null;
         int deleted = 0;
         try {
             Connection connection = getConnection();
@@ -62,17 +73,6 @@ public class DBManager implements StorageUnit {
         return deleted;
     }
 
-    private void savePokemonDetails(String name, String height, String[] abilities) throws PokemonError {
-        try {
-            Connection connection = getConnection();
-            Statement statement = connection.createStatement();
-            saveNameAndHeight(name, height, statement);
-            saveAbilites(name, abilities, statement);
-            closeConnections(connection, statement);
-        } catch (SQLException e) {
-            throw new PokemonError(name + " has already been caught!");
-        }
-    }
 
     private List<List<String>> getAllPokemon() throws PokemonError {
         try {

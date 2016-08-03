@@ -1,9 +1,9 @@
-package pkmncore;
+package pokemonmanager;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import pkmncore.storage.DBManager;
+import pokemonmanager.storage.DBManager;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

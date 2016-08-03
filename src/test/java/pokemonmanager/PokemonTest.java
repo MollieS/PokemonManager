@@ -1,7 +1,7 @@
-package pkmncore;
+package pokemonmanager;
 
 import org.junit.Test;
-import pkmncore.pokemon.NamedPokemon;
+import pokemonmanager.pokemon.NamedPokemon;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;

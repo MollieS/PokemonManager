@@ -1,7 +1,7 @@
-package pkmncore.testfakes;
+package pokemonmanager.testfakes;
 
-import pkmncore.PokemonError;
-import pkmncore.StorageUnit;
+import pokemonmanager.PokemonError;
+import pokemonmanager.StorageUnit;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +29,11 @@ public class StorageFake implements StorageUnit {
         if (pokemon.isEmpty()) {
             throw new PokemonError("No pokemon!");
         }
-        return pokemon;
+        List<List<String>> caughtPokemon = new ArrayList<List<String>>();
+        for (List<String> pokemonDetails : pokemon) {
+            caughtPokemon.add(pokemonDetails);
+        }
+        return caughtPokemon;
     }
 
     public void delete(String name) throws PokemonError {
