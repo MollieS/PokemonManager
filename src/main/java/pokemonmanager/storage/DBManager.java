@@ -12,10 +12,10 @@ import java.util.function.Function;
 
 public class DBManager implements StorageUnit {
 
-    final private String dbURL;
-    final private String username;
-    final private String password;
-    final private String driver;
+    private final String dbURL;
+    private final String username;
+    private final String password;
+    private final String driver;
 
     public DBManager(String dbURL, String username, String password, String driver) {
         this.dbURL = dbURL;

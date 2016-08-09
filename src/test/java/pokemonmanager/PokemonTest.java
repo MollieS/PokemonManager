@@ -32,9 +32,11 @@ public class PokemonTest {
     @Test
     public void canAddAnAbility() {
         pokemon.addAbility("electro");
+
         assertTrue(pokemon.getAbilities().size() == 3);
         assertEquals("lightning-rod", pokemon.getAbilities().get(0));
         assertEquals("static", pokemon.getAbilities().get(1));
         assertEquals("electro", pokemon.getAbilities().get(2));
     }
+
 }

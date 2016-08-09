@@ -14,12 +14,14 @@ import static org.junit.Assert.assertTrue;
 public class PokemonManagerTest {
 
     private PokemonManager pokemonManager = new PokemonManager(new StorageFake());
+    private Pokemon pokemon = new NamedPokemon("charmander", "8", Arrays.asList("flame-body", "lava"));
 
     @Test
     public void canViewCaughtPokemon() throws PokemonError {
-        Pokemon pokemon = new NamedPokemon("charmander", "8", Arrays.asList("flame-body", "lava"));
         pokemonManager.catchPokemon(pokemon);
+
         List<Pokemon> caughtPokemon = pokemonManager.viewCaughtPokemon();
+
         assertEquals("charmander", caughtPokemon.get(0).getName());
         assertEquals("8", caughtPokemon.get(0).getHeight());
         assertEquals("flame-body", caughtPokemon.get(0).getAbilities().get(0));
@@ -28,25 +30,26 @@ public class PokemonManagerTest {
 
     @Test
     public void canAddManyPokemon() throws PokemonError {
-        Pokemon pokemon = new NamedPokemon("pikachu", "4", Arrays.asList("static", "lightning-rod"));
-        Pokemon pokemon1 = new NamedPokemon("squirtle", "8", Arrays.asList("water-body", "whirlpool"));
+        Pokemon pokemon2 = new NamedPokemon("squirtle", "8", Arrays.asList("water-body", "whirlpool"));
+
         pokemonManager.catchPokemon(pokemon);
-        pokemonManager.catchPokemon(pokemon1);
+        pokemonManager.catchPokemon(pokemon2);
         List<Pokemon> caughtPokemon = pokemonManager.viewCaughtPokemon();
-        assertEquals("pikachu", caughtPokemon.get(0).getName());
-        assertEquals("squirtle", caughtPokemon.get(1).getName());
+
         assertTrue(caughtPokemon.size() == 2);
+        assertEquals("charmander", caughtPokemon.get(0).getName());
+        assertEquals("squirtle", caughtPokemon.get(1).getName());
     }
 
     @Test
     public void ifNoPokemonAreCaughtItShowsAnEmptyList() throws PokemonError {
         List<Pokemon> pokemon = pokemonManager.viewCaughtPokemon();
+
         assertTrue(pokemon.isEmpty());
     }
 
     @Test(expected = PokemonError.class)
     public void cannotCatchTheSamePokemonTwice() throws PokemonError {
-        Pokemon pokemon = new NamedPokemon("charmander", "8", Arrays.asList("flame-body", "lava"));
         pokemonManager.catchPokemon(pokemon);
         pokemonManager.catchPokemon(pokemon);
     }
@@ -59,10 +62,11 @@ public class PokemonManagerTest {
 
     @Test
     public void canSetAPokemonFree() throws PokemonError {
-        Pokemon pokemon = new NamedPokemon("charmander", "8", Arrays.asList("flame-body", "lava"));
         pokemonManager.catchPokemon(pokemon);
+
         pokemonManager.setFree("charmander");
         List<Pokemon> caughtPokemon = pokemonManager.viewCaughtPokemon();
+
         assertTrue(caughtPokemon.isEmpty());
     }
 
@@ -70,4 +74,5 @@ public class PokemonManagerTest {
     public void throwsAnErrorIfPokemonIsNotCaught() throws PokemonError {
         pokemonManager.setFree("pikachu");
     }
+
 }

@@ -80,4 +80,5 @@ public class PokemonSearch implements SearchEngine {
         }
         return endpoint;
     }
+
 }

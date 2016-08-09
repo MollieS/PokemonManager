@@ -16,6 +16,32 @@ public class StorageFake implements StorageUnit {
         caughtPokemon.add(pokemon);
     }
 
+    public List<Pokemon> getPokemon() throws PokemonError {
+        return caughtPokemon;
+    }
+
+    public void delete(String name) throws PokemonError {
+        Pokemon toDelete = Pokemon.NULL;
+        toDelete = getPokemonToFree(name, toDelete);
+        checkIfFree(toDelete);
+        caughtPokemon.remove(toDelete);
+    }
+
+    private Pokemon getPokemonToFree(String name, Pokemon toDelete) {
+        for (Pokemon pokemon : caughtPokemon) {
+            if (pokemon.getName().equals(name)) {
+                toDelete = pokemon;
+            }
+        }
+        return toDelete;
+    }
+
+    private void checkIfFree(Pokemon toDelete) throws PokemonError {
+        if (toDelete.equals(Pokemon.NULL)) {
+            throw new PokemonError("Not caught");
+        }
+    }
+
     private void checkIfCaught(Pokemon pokemon) throws PokemonError {
         for (Pokemon poke : caughtPokemon) {
             if (poke.getName().equals(pokemon.getName())) {
@@ -24,20 +50,4 @@ public class StorageFake implements StorageUnit {
         }
     }
 
-    public List<Pokemon> getPokemon() throws PokemonError {
-        return caughtPokemon;
-    }
-
-    public void delete(String name) throws PokemonError {
-        Pokemon toDelete = Pokemon.NULL;
-        for (Pokemon pokemon : caughtPokemon) {
-            if (pokemon.getName().equals(name)) {
-                toDelete = pokemon;
-            }
-        }
-        if (toDelete.equals(Pokemon.NULL)) {
-            throw new PokemonError("Not caught");
-        }
-        caughtPokemon.remove(toDelete);
-    }
 }

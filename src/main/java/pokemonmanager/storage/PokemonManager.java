@@ -32,4 +32,5 @@ public class PokemonManager {
     public void setFree(String name) throws PokemonError {
         storage.delete(name);
     }
+
 }

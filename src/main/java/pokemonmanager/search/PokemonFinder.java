@@ -43,11 +43,11 @@ public class PokemonFinder {
         return pokemonData;
     }
 
-    public String findDetail(JsonObject data, String detail) {
+    private String findDetail(JsonObject data, String detail) {
         return data.get(detail).getAsString();
     }
 
-    public List<String> findAbilities(JsonObject pokemonData) {
+    private List<String> findAbilities(JsonObject pokemonData) {
         JsonArray abilities = pokemonData.get("abilities").getAsJsonArray();
         return getAbilities(abilities);
     }
@@ -68,4 +68,5 @@ public class PokemonFinder {
         JsonObject currentAbility = abilities.get(ability).getAsJsonObject().get("ability").getAsJsonObject();
         return currentAbility.get("name").getAsString();
     }
+
 }

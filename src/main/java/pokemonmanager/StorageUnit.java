@@ -9,4 +9,5 @@ public interface StorageUnit {
     List<Pokemon> getPokemon() throws PokemonError;
 
     void delete(String name) throws PokemonError;
+
 }

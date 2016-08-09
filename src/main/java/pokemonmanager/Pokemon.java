@@ -13,7 +13,7 @@ public interface Pokemon {
 
     void addAbility(String ability);
 
-    public static final Pokemon NULL = new Pokemon() {
+    Pokemon NULL = new Pokemon() {
 
         public String getName() {
             return "This pokemon does not exist";
@@ -30,4 +30,5 @@ public interface Pokemon {
         public void addAbility(String ability) {
         }
     };
+
 }

@@ -32,4 +32,5 @@ public class NamedPokemon implements Pokemon {
     public void addAbility(String ability) {
         abilities.add(ability);
     }
+
 }

@@ -15,4 +15,5 @@ public class SearchFake implements SearchEngine {
             throw new PokemonError("That pokemon does not exist");
         }
     }
+    
 }
