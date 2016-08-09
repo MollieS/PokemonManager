@@ -2,13 +2,16 @@ package pokemonmanager;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
+import pokemonmanager.pokemon.NamedPokemon;
 import pokemonmanager.storage.DBManager;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -40,47 +43,60 @@ public class DBManagerTest {
     }
 
     @Test
-    public void savesAPokemonDetails() throws Exception {
-        dbManager.save("bulbasaur", "4", new String[]{"growth", "plant"});
-        List<String> pokemon = dbManager.getPokemon().get(0);
-        assertEquals("bulbasaur", pokemon.get(0));
-        assertEquals("4", pokemon.get(1));
-        assertEquals("growth", pokemon.get(2));
-        assertEquals("plant", pokemon.get(3));
+    public void savesAPokemonNameAndHeight() throws PokemonError {
+        NamedPokemon namedPokemon = new NamedPokemon("bulbasaur", "4", Arrays.asList("growth", "plant"));
+        dbManager.save(namedPokemon);
+        List<Pokemon> pokemon = dbManager.getPokemon();
+        Pokemon poke = pokemon.get(0);
+        assertEquals("bulbasaur", poke.getName());
+        assertEquals("4", poke.getHeight());
+    }
+
+    @Test
+    public void savesAPokemonAbilities() throws PokemonError {
+        NamedPokemon namedPokemon = new NamedPokemon("bulbasaur", "4", Arrays.asList("growth", "plant"));
+        dbManager.save(namedPokemon);
+        List<Pokemon> pokemon = dbManager.getPokemon();
+        Pokemon poke = pokemon.get(0);
+        List<String> abilities = poke.getAbilities();
+        assertEquals("growth", abilities.get(0));
+        assertEquals("plant", abilities.get(1));
     }
 
     @Test
     public void canSaveManyPokemon() throws Exception {
-        dbManager.save("charmander", "8", new String[]{"flame-body", "lava"});
-        dbManager.save("squirtle", "6", new String[]{"bubble", "aqua-tail"});
-        List<List<String>> allPokemon = dbManager.getPokemon();
-        assertEquals(allPokemon.get(0).get(0), "charmander");
-        assertEquals(allPokemon.get(1).get(0), "squirtle");
+        NamedPokemon namedPokemon = new NamedPokemon("bulbasaur", "4", Arrays.asList("growth", "plant"));
+        NamedPokemon namedPokemon2 = new NamedPokemon("charmander", "8", Arrays.asList("flame-body", "lava"));
+        dbManager.save(namedPokemon);
+        dbManager.save(namedPokemon2);
+        List<Pokemon> allPokemon = dbManager.getPokemon();
+        assertEquals(allPokemon.get(0).getName(), "bulbasaur");
+        assertEquals(allPokemon.get(1).getName(), "charmander");
     }
 
     @Test
     public void cannotSaveSamePokemonTwice() throws Exception {
-        dbManager.save("wartortle", "6", new String[]{"bubble", "aqua-tail"});
-        dbManager.save("wartortle", "6", new String[]{"bubble", "aqua-tail"});
-        List<List<String>> pokemon = dbManager.getPokemon();
+        NamedPokemon namedPokemon = new NamedPokemon("wartortle", "6", Arrays.asList("bubble", "aqua-tail"));
+        dbManager.save(namedPokemon);
+        dbManager.save(namedPokemon);
+        List<Pokemon> pokemon = dbManager.getPokemon();
         assertTrue(pokemon.size() == 1);
-        System.out.println(pokemon.get(0).size());
-        assertTrue(pokemon.get(0).size() == 4);
+        assertTrue(pokemon.get(0).getAbilities().size() == 2);
     }
 
     @Test
     public void returnsEmptyListIfNoPokemonSaved() throws Exception {
-        List<List<String>> pokemon = dbManager.getPokemon();
+        List<Pokemon> pokemon = dbManager.getPokemon();
         assertTrue(pokemon.isEmpty());
     }
 
     @Test
     public void canDeleteAPokemon() throws Exception {
-        dbManager.save("lapras", "24", new String[]{"ice-storm", "mist"});
-        List<List<String>> caughtPokemon = dbManager.getPokemon();
+        NamedPokemon pokemon = new NamedPokemon("lapras", "24", Arrays.asList("ice-storm", "mist"));
+        dbManager.save(pokemon);
         dbManager.delete("lapras");
-        List<List<String>> pokemon = dbManager.getPokemon();
-        assertTrue(pokemon.isEmpty());
+        List<Pokemon> caughtPokemon = dbManager.getPokemon();
+        assertTrue(caughtPokemon.isEmpty());
     }
 
     @Test(expected = PokemonError.class)

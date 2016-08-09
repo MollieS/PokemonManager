@@ -1,5 +1,6 @@
 package pokemonmanager.testfakes;
 
+import pokemonmanager.Pokemon;
 import pokemonmanager.PokemonError;
 import pokemonmanager.StorageUnit;
 
@@ -8,58 +9,35 @@ import java.util.List;
 
 public class StorageFake implements StorageUnit {
 
-    private List<List<String>> pokemon = new ArrayList<List<String>>();
+    private List<Pokemon> caughtPokemon = new ArrayList<>();
 
-    public void save(String name, String height, String[] abilities) throws PokemonError {
-        checkIfCaught(name);
-        List<String> details = addNameAndHeight(name, height);
-        addAbilites(abilities, details);
-        pokemon.add(details);
+    public void save(Pokemon pokemon) throws PokemonError {
+        checkIfCaught(pokemon);
+        caughtPokemon.add(pokemon);
     }
 
-    private void checkIfCaught(String name) throws PokemonError {
-        for (List<String> poke : pokemon) {
-            if (poke.get(0).equals(name)) {
+    private void checkIfCaught(Pokemon pokemon) throws PokemonError {
+        for (Pokemon poke : caughtPokemon) {
+            if (poke.getName().equals(pokemon.getName())) {
                 throw new PokemonError("Pokemon already caught");
             }
         }
     }
 
-    public List<List<String>> getPokemon() throws PokemonError {
-        if (pokemon.isEmpty()) {
-            throw new PokemonError("No pokemon!");
-        }
-        List<List<String>> caughtPokemon = new ArrayList<List<String>>();
-        for (List<String> pokemonDetails : pokemon) {
-            caughtPokemon.add(pokemonDetails);
-        }
+    public List<Pokemon> getPokemon() throws PokemonError {
         return caughtPokemon;
     }
 
     public void delete(String name) throws PokemonError {
-        int toDelete = -10;
-        for (int i = 0; i < pokemon.size(); i++) {
-            if (name.equals(pokemon.get(i).get(0))) {
-                toDelete = i;
+        Pokemon toDelete = Pokemon.NULL;
+        for (Pokemon pokemon : caughtPokemon) {
+            if (pokemon.getName().equals(name)) {
+                toDelete = pokemon;
             }
         }
-        if (toDelete == -10) {
-            throw new PokemonError("Not caught!");
+        if (toDelete.equals(Pokemon.NULL)) {
+            throw new PokemonError("Not caught");
         }
-        pokemon.remove(toDelete);
+        caughtPokemon.remove(toDelete);
     }
-
-    private void addAbilites(String[] abilities, List<String> details) {
-        for (String ability : abilities) {
-            details.add(ability);
-        }
-    }
-
-    private List<String> addNameAndHeight(String name, String height) {
-        List<String> details = new ArrayList<String>();
-        details.add(name);
-        details.add(height);
-        return details;
-    }
-
 }

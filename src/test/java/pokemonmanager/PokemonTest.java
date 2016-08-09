@@ -3,12 +3,14 @@ package pokemonmanager;
 import org.junit.Test;
 import pokemonmanager.pokemon.NamedPokemon;
 
+import java.util.Arrays;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class PokemonTest {
 
-    private NamedPokemon pokemon = new NamedPokemon("Pikachu", "1", new String[]{"lightning-rod", "static"});
+    private NamedPokemon pokemon = new NamedPokemon("Pikachu", "1", Arrays.asList("lightning-rod", "static"));
 
     @Test
     public void hasAName() {
@@ -22,8 +24,17 @@ public class PokemonTest {
 
     @Test
     public void hasAbilities() {
-        assertEquals("lightning-rod", pokemon.getAbilities()[0]);
-        assertEquals("static", pokemon.getAbilities()[1]);
-        assertTrue(pokemon.getAbilities().length == 2);
+        assertTrue(pokemon.getAbilities().size() == 2);
+        assertEquals("lightning-rod", pokemon.getAbilities().get(0));
+        assertEquals("static", pokemon.getAbilities().get(1));
+    }
+
+    @Test
+    public void canAddAnAbility() {
+        pokemon.addAbility("electro");
+        assertTrue(pokemon.getAbilities().size() == 3);
+        assertEquals("lightning-rod", pokemon.getAbilities().get(0));
+        assertEquals("static", pokemon.getAbilities().get(1));
+        assertEquals("electro", pokemon.getAbilities().get(2));
     }
 }

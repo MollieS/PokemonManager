@@ -1,12 +1,17 @@
 package pokemonmanager;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public interface Pokemon {
 
     String getName();
 
     String getHeight();
 
-    String[] getAbilities();
+    List<String> getAbilities();
+
+    void addAbility(String ability);
 
     public static final Pokemon NULL = new Pokemon() {
 
@@ -18,8 +23,11 @@ public interface Pokemon {
             return new String();
         }
 
-        public String[] getAbilities() {
-            return new String[0];
+        public List<String> getAbilities() {
+            return new ArrayList<>();
+        }
+
+        public void addAbility(String ability) {
         }
     };
 }

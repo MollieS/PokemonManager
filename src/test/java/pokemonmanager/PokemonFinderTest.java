@@ -4,6 +4,8 @@ import org.junit.Test;
 import pokemonmanager.search.PokemonFinder;
 import pokemonmanager.testfakes.SearchFake;
 
+import java.util.List;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -26,10 +28,10 @@ public class PokemonFinderTest {
     @Test
     public void findsPokemonAbilities() {
         Pokemon pokemon = pokemonFinder.find("pikachu");
-        String[] abilities = pokemon.getAbilities();
-        assertEquals("lightning-rod", abilities[0]);
-        assertEquals("static", abilities[1]);
-        assertTrue(abilities.length == 2);
+        List<String> abilities = pokemon.getAbilities();
+        assertEquals("lightning-rod", abilities.get(0));
+        assertEquals("static", abilities.get(1));
+        assertTrue(abilities.size() == 2);
     }
 
     @Test
@@ -37,8 +39,8 @@ public class PokemonFinderTest {
         Pokemon pokemon = pokemonFinder.find("Mollie");
         assertEquals(Pokemon.NULL, pokemon);
         assertEquals("This pokemon does not exist", pokemon.getName());
-        assertEquals(new String(), pokemon.getHeight());
-        assertTrue(pokemon.getAbilities().length == 0);
+        assertEquals("", pokemon.getHeight());
+        assertTrue(pokemon.getAbilities().size() == 0);
     }
 
     @Test

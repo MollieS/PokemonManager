@@ -1,7 +1,9 @@
 package pokemonmanager.storage;
 
+import pokemonmanager.Pokemon;
 import pokemonmanager.PokemonError;
 import pokemonmanager.StorageUnit;
+import pokemonmanager.pokemon.NamedPokemon;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -22,53 +24,54 @@ public class DBManager implements StorageUnit {
         this.driver = driver;
     }
 
-    public void save(String name, String height, String[] abilities) throws PokemonError {
-        int saved = runInConnection(statement -> saveNameAndHeight(name, height, statement));
+    public void save(Pokemon pokemon) throws PokemonError {
+        runInConnection(statement -> savePokemon(statement, pokemon));
+    }
+
+    private int savePokemon(Statement statement, Pokemon pokemon) {
+        String name = pokemon.getName();
+        String height = pokemon.getHeight();
+        List<String> abilities = pokemon.getAbilities();
+        String sql = "INSERT INTO POKEMON (name, height) VALUES ('" + name + "', '" + height + "');";
+        int saved = executeUpdate(statement, sql);
         if (saved > 0) {
-            runInConnection(statement -> saveAbilites(name, abilities, statement));
+            saveAbilites(name, abilities, statement);
         }
+        return saved;
     }
 
-    public void delete(String name) throws PokemonError {
-        int deleted = runInConnection(statement -> deletePokemon(name, statement));
-        checkIfCaught(deleted);
+    public List<Pokemon> getPokemon() throws PokemonError {
+        List<Pokemon> pokemon = runInConnection(statement -> getPokemonNameAndHeight(statement));
+        List<Pokemon> caughtPokemon = runInConnection(statement -> getPokemonAbilities(pokemon, statement));
+        return caughtPokemon;
     }
 
-    public List<List<String>> getPokemon() throws PokemonError {
-        List<List<String>> pokemon = runInConnection(statement -> getPokemonList(statement));
-        return runInConnection(statement -> getPokemonAbilities(pokemon, statement));
-    }
-
-    private List<List<String>> getPokemonList(Statement statement) {
+    private List<Pokemon> getPokemonNameAndHeight(Statement statement) {
         String sql = "SELECT * FROM POKEMON;";
-        ResultSet caughtPokemon = null;
+        List<Pokemon> caughtPokemon = new ArrayList<>();
+        Pokemon pokemon;
         try {
-            caughtPokemon = statement.executeQuery(sql);
-            return getPokemonNames(caughtPokemon);
+            ResultSet allPokemon = statement.executeQuery(sql);
+            while (allPokemon.next()) {
+                String name = allPokemon.getString("name");
+                String height = allPokemon.getString("height");
+                pokemon = new NamedPokemon(name, height, new ArrayList<>());
+                caughtPokemon.add(pokemon);
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return null;
+        return caughtPokemon;
     }
 
-    private List<List<String>> getPokemonNames(ResultSet caughtPokemon) throws SQLException {
-        List<List<String>> allPokemon = new ArrayList<>();
-        while (caughtPokemon.next()) {
-            List<String> pokemon = new ArrayList<>();
-            pokemon.add(caughtPokemon.getString("name"));
-            pokemon.add(caughtPokemon.getString("height"));
-            allPokemon.add(pokemon);
-        }
-        return allPokemon;
-    }
-
-    private List<List<String>> getPokemonAbilities(List<List<String>> caughtPokemon, Statement statement) {
-        for (List<String> pokemon : caughtPokemon) {
-            String sql = "SELECT * FROM ABILITIES WHERE (name) = '" + pokemon.get(0) + "';";
-            ResultSet abilities = null;
+    private List<Pokemon> getPokemonAbilities(List<Pokemon> caughtPokemon, Statement statement) {
+        for (Pokemon pokemon : caughtPokemon) {
+            String sql = "SELECT * FROM ABILITIES WHERE NAME = '" + pokemon.getName() + "';";
             try {
-                abilities = statement.executeQuery(sql);
-                listAbilities(pokemon, abilities);
+                ResultSet abilities = statement.executeQuery(sql);
+                while (abilities.next()) {
+                    pokemon.addAbility(abilities.getString("ability"));
+                }
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -76,13 +79,10 @@ public class DBManager implements StorageUnit {
         return caughtPokemon;
     }
 
-    private List<String> listAbilities(List<String> pokemon, ResultSet abilities) throws SQLException {
-        while (abilities.next()) {
-            pokemon.add(abilities.getString("ability"));
-        }
-        return pokemon;
+    public void delete(String name) throws PokemonError {
+        int deleted = runInConnection(statement -> deletePokemon(name, statement));
+        checkIfCaught(deleted);
     }
-
 
     private <T> T runInConnection(Function<Statement, T> operation) throws PokemonError {
         T returnValue = null;
@@ -99,6 +99,38 @@ public class DBManager implements StorageUnit {
             return returnValue;
         }
     }
+
+    private List<List<String>> getPokemonList(Statement statement) {
+        String sql = "SELECT * FROM POKEMON;";
+        List<List<String>> pokemon = null;
+        try {
+            ResultSet caughtPokemon = statement.executeQuery(sql);
+            pokemon = getPokemonNames(caughtPokemon);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return pokemon;
+    }
+
+    private List<List<String>> getPokemonNames(ResultSet caughtPokemon) throws SQLException {
+        List<List<String>> allPokemon = new ArrayList<>();
+        while (caughtPokemon.next()) {
+            List<String> pokemon = new ArrayList<>();
+            pokemon.add(caughtPokemon.getString("name"));
+            pokemon.add(caughtPokemon.getString("height"));
+            allPokemon.add(pokemon);
+        }
+        return allPokemon;
+    }
+
+
+    private List<String> listAbilities(List<String> pokemon, ResultSet abilities) throws SQLException {
+        while (abilities.next()) {
+            pokemon.add(abilities.getString("ability"));
+        }
+        return pokemon;
+    }
+
 
     private void checkIfCaught(int deleted) throws PokemonError {
         if (deleted < 1) {
@@ -156,7 +188,7 @@ public class DBManager implements StorageUnit {
         return saved;
     }
 
-    private int saveAbilites(String name, String[] abilities, Statement statement) {
+    private int saveAbilites(String name, List<String> abilities, Statement statement) {
         int saved = 0;
         for (String ability : abilities) {
             String sql = "INSERT INTO ABILITIES (name, ability) VALUES ('" + name + "', '" + ability + "');";
@@ -164,4 +196,5 @@ public class DBManager implements StorageUnit {
         }
         return saved;
     }
+
 }
