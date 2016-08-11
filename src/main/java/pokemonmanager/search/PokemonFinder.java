@@ -7,6 +7,9 @@ import pokemonmanager.PokemonError;
 import pokemonmanager.SearchEngine;
 import pokemonmanager.pokemon.NamedPokemon;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class PokemonFinder {
 
     private SearchEngine searchEngine;
@@ -40,11 +43,11 @@ public class PokemonFinder {
         return pokemonData;
     }
 
-    public String findDetail(JsonObject data, String detail) {
+    private String findDetail(JsonObject data, String detail) {
         return data.get(detail).getAsString();
     }
 
-    public String[] findAbilities(JsonObject pokemonData) {
+    private List<String> findAbilities(JsonObject pokemonData) {
         JsonArray abilities = pokemonData.get("abilities").getAsJsonArray();
         return getAbilities(abilities);
     }
@@ -53,10 +56,10 @@ public class PokemonFinder {
         return query.toLowerCase().trim();
     }
 
-    private String[] getAbilities(JsonArray abilities) {
-        String[] pokemonAbilities = new String[abilities.size()];
+    private List<String> getAbilities(JsonArray abilities) {
+        List<String> pokemonAbilities = new ArrayList<>();
         for (int ability = 0; ability < abilities.size(); ability++) {
-            pokemonAbilities[ability] = getAbilityName(abilities, ability);
+            pokemonAbilities.add(getAbilityName(abilities, ability));
         }
         return pokemonAbilities;
     }
@@ -65,4 +68,5 @@ public class PokemonFinder {
         JsonObject currentAbility = abilities.get(ability).getAsJsonObject().get("ability").getAsJsonObject();
         return currentAbility.get("name").getAsString();
     }
+
 }

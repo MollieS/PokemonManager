@@ -3,9 +3,7 @@ package pokemonmanager.storage;
 import pokemonmanager.Pokemon;
 import pokemonmanager.PokemonError;
 import pokemonmanager.StorageUnit;
-import pokemonmanager.pokemon.NamedPokemon;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class PokemonManager {
@@ -18,49 +16,11 @@ public class PokemonManager {
 
     public void catchPokemon(Pokemon pokemon) throws PokemonError {
         checkForNullPokemon(pokemon);
-        savePokemon(pokemon);
+        storage.save(pokemon);
     }
 
-    public List<Pokemon> viewCaughtPokemon() {
-        List<Pokemon> caughtPokemon = new ArrayList<Pokemon>();
-        List<List<String>> allPokemon = getPokemon();
-        for (List<String> pokemonDetails : allPokemon) {
-            caughtPokemon.add(createPokemon(pokemonDetails));
-        }
-        return caughtPokemon;
-    }
-
-    private Pokemon createPokemon(List<String> pokemonDetails) {
-        String name = pokemonDetails.get(0);
-        String height = pokemonDetails.get(1);
-        String[] abilities = getAbilities(pokemonDetails);
-        return new NamedPokemon(name, height, abilities);
-    }
-
-    private String[] getAbilities(List<String> pokemonDetails) {
-        String[] abilities = new String[pokemonDetails.size() - 2];
-        int index = 0;
-        for (int i = 2; i < pokemonDetails.size(); i++) {
-            abilities[index] = pokemonDetails.get(i);
-            index++;
-        }
-        return abilities;
-    }
-
-    private List<List<String>> getPokemon() {
-        try {
-            return storage.getPokemon();
-        } catch (PokemonError pokemonError) {
-            return new ArrayList<List<String>>();
-        }
-    }
-
-    private void savePokemon(Pokemon pokemon) throws PokemonError {
-        try {
-            storage.save(pokemon.getName(), pokemon.getHeight(), pokemon.getAbilities());
-        } catch (PokemonError pokemonError) {
-            throw new PokemonError(pokemon.getName() +  " has already been caught!" + pokemonError.getMessage());
-        }
+    public List<Pokemon> viewCaughtPokemon() throws PokemonError {
+        return storage.getPokemon();
     }
 
     private void checkForNullPokemon(Pokemon pokemon) throws PokemonError {
@@ -72,4 +32,5 @@ public class PokemonManager {
     public void setFree(String name) throws PokemonError {
         storage.delete(name);
     }
+
 }

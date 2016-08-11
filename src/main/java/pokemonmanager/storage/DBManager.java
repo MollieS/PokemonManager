@@ -1,18 +1,21 @@
 package pokemonmanager.storage;
 
+import pokemonmanager.Pokemon;
 import pokemonmanager.PokemonError;
 import pokemonmanager.StorageUnit;
+import pokemonmanager.pokemon.NamedPokemon;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 
 public class DBManager implements StorageUnit {
 
-    final private String dbURL;
-    final private String username;
-    final private String password;
-    final private String driver;
+    private final String dbURL;
+    private final String username;
+    private final String password;
+    private final String driver;
 
     public DBManager(String dbURL, String username, String password, String driver) {
         this.dbURL = dbURL;
@@ -21,42 +24,91 @@ public class DBManager implements StorageUnit {
         this.driver = driver;
     }
 
-    private Connection getConnection() throws PokemonError, SQLException {
-        setDriver();
-        return connectToDB();
+    public void save(Pokemon pokemon) throws PokemonError {
+        runInConnection(statement -> savePokemon(statement, pokemon));
     }
 
-    public void save(String name, String height, String[] abilities) throws PokemonError {
-        savePokemonDetails(name, height, abilities);
-    }
-
-    private void savePokemonDetails(String name, String height, String[] abilities) throws PokemonError {
-        try {
-            Connection connection = getConnection();
-            Statement statement = connection.createStatement();
-            saveNameAndHeight(name, height, statement);
-            saveAbilites(name, abilities, statement);
-            closeConnections(connection, statement);
-        } catch (SQLException e) {
-            throw new PokemonError(name + " has already been caught!");
-        }
-    }
-
-    public List<List<String>> getPokemon() throws PokemonError {
-        return getAllPokemon();
+    public List<Pokemon> getPokemon() throws PokemonError {
+        List<Pokemon> pokemon = runInConnection(this::getPokemonNameAndHeight);
+        return runInConnection(statement -> getPokemonAbilities(pokemon, statement));
     }
 
     public void delete(String name) throws PokemonError {
-        int deleted = 0;
+        int deleted = runInConnection(statement -> deletePokemon(name, statement));
+        checkIfCaught(deleted);
+    }
+
+    private <T> T runInConnection(Function<Statement, T> operation) throws PokemonError {
+        T returnValue = null;
         try {
             Connection connection = getConnection();
             Statement statement = connection.createStatement();
-            deleted = deletePokemon(name, statement);
+            returnValue = operation.apply(statement);
             closeConnections(connection, statement);
         } catch (SQLException e) {
-            e.getMessage();
+            throw new PokemonError(e.getMessage());
+        } finally {
+            return returnValue;
         }
-        checkIfCaught(deleted);
+    }
+
+    private List<Pokemon> getPokemonNameAndHeight(Statement statement) {
+        String sql = "SELECT * FROM POKEMON;";
+        List<Pokemon> caughtPokemon = new ArrayList<>();
+        try {
+            ResultSet allPokemon = statement.executeQuery(sql);
+            listAllPokemon(caughtPokemon, allPokemon);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return caughtPokemon;
+    }
+
+    private void listAllPokemon(List<Pokemon> caughtPokemon, ResultSet allPokemon) throws SQLException {
+        while (allPokemon.next()) {
+            caughtPokemon.add(createPokemon(allPokemon));
+        }
+    }
+
+    private void listAbilities(Pokemon pokemon, ResultSet abilities) throws SQLException {
+        while (abilities.next()) {
+            pokemon.addAbility(abilities.getString("ability"));
+        }
+    }
+
+    private Pokemon createPokemon(ResultSet allPokemon) throws SQLException {
+        String name = allPokemon.getString("name");
+        String height = allPokemon.getString("height");
+        return new NamedPokemon(name, height, new ArrayList<>());
+    }
+
+    private List<Pokemon> getPokemonAbilities(List<Pokemon> caughtPokemon, Statement statement) {
+        for (Pokemon pokemon : caughtPokemon) {
+            String sql = "SELECT * FROM ABILITIES WHERE NAME = '" + pokemon.getName() + "';";
+            try {
+                ResultSet abilities = statement.executeQuery(sql);
+                listAbilities(pokemon, abilities);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return caughtPokemon;
+    }
+
+    private int savePokemon(Statement statement, Pokemon pokemon) {
+        String name = pokemon.getName();
+        String height = pokemon.getHeight();
+        List<String> abilities = pokemon.getAbilities();
+        String sql = "INSERT INTO POKEMON (name, height) VALUES ('" + name + "', '" + height + "');";
+        return saveAbilities(statement, name, abilities, sql);
+    }
+
+    private int saveAbilities(Statement statement, String name, List<String> abilities, String sql) {
+        int saved = executeUpdate(statement, sql);
+        if (saved > 0) {
+            saveAbilites(name, abilities, statement);
+        }
+        return saved;
     }
 
     private void checkIfCaught(int deleted) throws PokemonError {
@@ -65,65 +117,29 @@ public class DBManager implements StorageUnit {
         }
     }
 
-    private int deletePokemon(String name, Statement statement) throws SQLException {
+    private int deletePokemon(String name, Statement statement) {
         String sql = "DELETE FROM POKEMON WHERE NAME = '" + name + "'";
         String sql2 = "DELETE FROM ABILITIES WHERE NAME = '" + name + "'";
-        int deleted = statement.executeUpdate(sql);
-        statement.executeUpdate(sql2);
+        int deleted = executeUpdate(statement, sql);
+        executeUpdate(statement, sql2);
         return deleted;
     }
 
-
-    private List<List<String>> getAllPokemon() throws PokemonError {
-        try {
-            Connection connection = getConnection();
-            Statement statement = connection.createStatement();
-            String sql = "SELECT * FROM POKEMON;";
-            List<List<String>> pokemon = listPokemon(connection, statement.executeQuery(sql));
-            closeConnections(connection, statement);
-            return pokemon;
-        } catch (SQLException e) {
-            throw new PokemonError("Something is wrong with the database! " + e.getMessage());
-        }
-    }
-
-    private List<List<String>> listPokemon(Connection connection, ResultSet caughtPokemon) throws SQLException {
-        List<List<String>> allPokemon = new ArrayList<List<String>>();
-        while (caughtPokemon.next()) {
-            List<String> pokemon = new ArrayList<String>();
-            pokemon.add(caughtPokemon.getString("name"));
-            pokemon.add(caughtPokemon.getString("height"));
-            pokemon = getAbilities(pokemon, connection);
-            allPokemon.add(pokemon);
-        }
-        return allPokemon;
-    }
-
-    private List<String> getAbilities(List<String> pokemon, Connection connection) throws SQLException {
-        Statement statement = connection.createStatement();
-        String sql = "SELECT * FROM ABILITIES WHERE (name) = '" + pokemon.get(0) + "';";
-        ResultSet abilities = statement.executeQuery(sql);
-        pokemon = listAbilities(pokemon, abilities);
-        return pokemon;
-    }
-
-    private List<String> listAbilities(List<String> pokemon, ResultSet abilities) throws SQLException {
-        while (abilities.next()) {
-            pokemon.add(abilities.getString("ability"));
-        }
-        return pokemon;
-    }
-
-    private void setDriver() throws PokemonError {
+    private void setDriver() {
         try {
             Class.forName(driver);
         } catch (ClassNotFoundException e) {
-            throw new PokemonError("Invalid driver " + driver + "\n" + e.getMessage());
+            e.getMessage();
         }
     }
 
-    private Connection connectToDB() throws SQLException {
-        return DriverManager.getConnection(dbURL, username, password);
+    private Connection connectToDB() {
+        try {
+            return DriverManager.getConnection(dbURL, username, password);
+        } catch (SQLException e) {
+            e.getMessage();
+        }
+        return null;
     }
 
     private void closeConnections(Connection connection, Statement statement) throws SQLException {
@@ -131,15 +147,28 @@ public class DBManager implements StorageUnit {
         statement.close();
     }
 
-    private void saveNameAndHeight(String name, String height, Statement statement) throws SQLException {
-        String sql = "INSERT INTO POKEMON (name, height) VALUES ('" + name + "', '" + height + "');";
-        statement.execute(sql);
+    private Connection getConnection() {
+        setDriver();
+        return connectToDB();
     }
 
-    private void saveAbilites(String name, String[] abilities, Statement statement) throws SQLException {
+    private int executeUpdate(Statement statement, String sql) {
+        int saved = 0;
+        try {
+            saved = statement.executeUpdate(sql);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return saved;
+    }
+
+    private int saveAbilites(String name, List<String> abilities, Statement statement) {
+        int saved = 0;
         for (String ability : abilities) {
             String sql = "INSERT INTO ABILITIES (name, ability) VALUES ('" + name + "', '" + ability + "');";
-            statement.execute(sql);
+            saved = executeUpdate(statement, sql);
         }
+        return saved;
     }
+
 }

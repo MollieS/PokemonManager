@@ -4,9 +4,10 @@ import java.util.List;
 
 public interface StorageUnit {
 
-    void save(String name, String height, String[] abilities) throws PokemonError;
+    void save(Pokemon pokemon) throws PokemonError;
 
-    List<List<String>> getPokemon() throws PokemonError;
+    List<Pokemon> getPokemon() throws PokemonError;
 
     void delete(String name) throws PokemonError;
+
 }
